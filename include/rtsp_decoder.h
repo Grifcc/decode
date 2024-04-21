@@ -77,7 +77,8 @@ private:
     int srcWidth_;
     int srcHeight_;
     const AVPixelFormat srcFormat_ = AV_PIX_FMT_YUV420P;
-
+    int log_level_;
+    
     int videoStreamIndex_ = -1;
     AVFormatContext *srcFmtContext_ = nullptr;
     AVCodecParameters *codecParameters_ = nullptr;

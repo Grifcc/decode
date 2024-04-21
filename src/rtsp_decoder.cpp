@@ -37,10 +37,11 @@ RtspDecoder::RtspDecoder(const std::string &rtspUrl,
                          const int srcHeight,
                          const int log_level) : rtspUrl_(rtspUrl),
                                                 srcWidth_(srcWidth),
-                                                srcHeight_(srcHeight)
+                                                srcHeight_(srcHeight),
+                                                log_level_(log_level)
 
 {
-    av_log_set_level(log_level);
+    av_log_set_level(log_level_);
     av_register_all();
 
     srcFmtContext_ = avformat_alloc_context();
@@ -190,6 +191,14 @@ void RtspDecoder::decode_target(const AVPacket &packet, std::vector<Label> &labe
     auto nalusize = seiNaluSize(len);
     if (*(data + nalusize - 1) != 0x80)
     {
+
+#ifdef DEBUG
+        for (size_t i = 0; i < nalusize; i++)
+        {
+            /* code */
+            MLOG_DEBUG("data[%d]: %x", i, data[i]);
+        }
+#endif
         MLOG_ERROR("data error");
         return;
     }
