@@ -203,18 +203,17 @@ void RtspDecoder::decode_target(const AVPacket &packet, std::vector<Label> &labe
         return;
     }
     uint8_t *target_data = data + 22 + 2;
-    for (int i = 0; i < len / 12; ++i)
+    for (int i = 0; i < len / 18; ++i)
     {
         Label label;
-
-        label.label = transEnd(target_data);
-        label.x = transEnd(target_data + 2);
-        label.y = transEnd(target_data + 4);
-        label.w = transEnd(target_data + 6);
-        label.h = transEnd(target_data + 8);
-        label.id = transEnd(target_data + 10);
+        label.label = transEnd(target_data + 1);
+        label.x = transEnd(target_data + 4);
+        label.y = transEnd(target_data + 7);
+        label.w = transEnd(target_data + 10);
+        label.h = transEnd(target_data + 13);
+        label.id = transEnd(target_data + 16);
         labels.push_back(label);
-        target_data += 12;
+        target_data += 18;
     }
 }
 
