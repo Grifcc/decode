@@ -43,22 +43,26 @@ RtspDecoder::RtspDecoder(const std::string &rtspUrl,
 {
     av_log_set_level(log_level_);
     av_register_all();
-
+    avformat_network_init();
+    status_flag_.store(0);
     srcFmtContext_ = avformat_alloc_context();
     if (!srcFmtContext_)
     {
         MLOG_ERROR("avformat_alloc_context failed");
     }
+    MLOG_INFO("avformat_alloc_context success");
     codecContext_ = avcodec_alloc_context3(nullptr);
     if (!codecContext_)
     {
         MLOG_ERROR("avcodec_alloc_context3 failed");
     }
-
+    MLOG_INFO("avcodec_alloc_context3 success");
     swsContext_ = sws_getContext(
         srcWidth_, srcHeight_, AV_PIX_FMT_YUV420P,
         srcWidth_, srcHeight_, AV_PIX_FMT_GRAY8,
         0, nullptr, nullptr, nullptr);
+     MLOG_INFO("sws_getContext success");
+
 }
 
 bool RtspDecoder::init_stream()
@@ -121,7 +125,6 @@ bool RtspDecoder::init_stream()
         avformat_free_context(srcFmtContext_);
         return false;
     }
-    stopped_.store(false);
     return true;
 }
 
@@ -147,10 +150,10 @@ void RtspDecoder::start()
         avformat_free_context(srcFmtContext_);
         return;
     }
-
     AVPacket packet;
-    while (!stopped_.load())
-    {
+    status_flag_.store(1);
+    while (status_flag_.load() == 1)
+    {   
         if (!(av_read_frame(srcFmtContext_, &packet) >= 0))
         {
             continue;
@@ -174,14 +177,14 @@ void RtspDecoder::start()
         av_packet_unref(&packet);
     }
     av_frame_free(&frame);
-    stop();
+    status_flag_.store(0);
     return;
 }
 
 void RtspDecoder::stop()
 {
     data_queue_.clear();
-    stopped_.store(true);
+    status_flag_.store(2);
 }
 
 Target *RtspDecoder::get_target()
@@ -224,10 +227,11 @@ void RtspDecoder::decode_target(const AVPacket &packet, std::vector<Label> &labe
 
 RtspDecoder::~RtspDecoder()
 {
-    if (!stopped_.load())
+    if (!status_flag_.load())
     {
         stop();
     }
+    sws_freeContext(swsContext_);
     avcodec_close(codecContext_);
     avcodec_free_context(&codecContext_);
     avformat_close_input(&srcFmtContext_);

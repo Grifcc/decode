@@ -44,8 +44,6 @@ endif()
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/build/bin)
 
 # install target and libraries
-set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install)
-
 set(CMAKE_SKIP_INSTALL_RPATH FALSE)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
@@ -88,7 +86,9 @@ aux_source_directory(${PROJECT_SOURCE_DIR}/src/ DET_SRC_DIR)
 set(CMAKE_INSTALL_RPATH "lib")
 
 # install target and libraries
-set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install)
+if(NOT  CMAKE_INSTALL_PREFIX)
+  set(CMAKE_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/install)
+endif()
 message(STATUS "CMAKE_INSTALL_PREFIX :${CMAKE_INSTALL_PREFIX}")
 
 add_library(rtsp_decoder SHARED src/rtsp_decoder.cpp)
@@ -112,5 +112,4 @@ rtsp_decoder
 
 install(TARGETS main DESTINATION ./)
 install(TARGETS rtsp_decoder DESTINATION ./lib)
-install(FILES ${PROJECT_SOURCE_DIR}/include/threadsafe_queue.h DESTINATION ./include/)
 install(FILES ${PROJECT_SOURCE_DIR}/include/rtsp_decoder.h DESTINATION ./include/)

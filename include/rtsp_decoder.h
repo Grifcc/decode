@@ -65,7 +65,9 @@ public:
     void start();
     void stop();
 
-    bool is_stopped() const { return stopped_.load(); }
+    bool is_stop() const { return status_flag_.load() == 2; }
+    bool is_ready() const { return status_flag_.load() == 0; }
+    bool is_running() const { return status_flag_.load() == 1; }
     bool is_empty() const { return data_queue_.empty(); }
     Target *get_target();
 
@@ -87,5 +89,5 @@ private:
     SwsContext *swsContext_ = nullptr;
 
     threadsafe_queue<Target *> data_queue_;
-    std::atomic<bool> stopped_;
+    std::atomic<int> status_flag_;
 };

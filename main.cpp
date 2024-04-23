@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
     {
         if (rtsp_decoder->is_empty())
         {
-            if (rtsp_decoder->is_stopped())
+            if (rtsp_decoder->is_stop())
             {
                 MLOG_INFO("rtsp_decoder is stopped");
                 break;
@@ -80,7 +80,11 @@ int main(int argc, char *argv[])
         i++;
         /* code */
     }
-
+    while (rtsp_decoder->is_ready())
+    {
+        /* code */
+        usleep(1000);
+    }
     delete rtsp_decoder;
     delete pull_thread;
     return 0;
