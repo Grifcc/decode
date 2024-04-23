@@ -10,7 +10,7 @@ mkdir -p build
 cd build
 
 # 运行 CMake 构建，传入构建类型参数
-cmake .. -DCMAKE_BUILD_TYPE="$1" -DCMAKE_TOOLCHAIN_FILE=../toolchains/orin_native.toolchain.cmake -DCMAKE_INSTALL_PREFIX=/root/zf/kcf_qt/3rdparty/rtsp
+cmake .. -DCMAKE_BUILD_TYPE="$1" -DCMAKE_TOOLCHAIN_FILE=../toolchains/orin_native.toolchain.cmake -DCMAKE_INSTALL_PREFIX=../install
 
 # 使用多线程进行编译和安装
 make install -j$(nproc)
