@@ -149,8 +149,12 @@ void RtspDecoder::start()
     }
 
     AVPacket packet;
-    while (av_read_frame(srcFmtContext_, &packet) >= 0)
+    while (!stopped_.load())
     {
+        if (!(av_read_frame(srcFmtContext_, &packet) >= 0))
+        {
+            continue;
+        }
         if (packet.stream_index == videoStreamIndex_)
         {
             if (avcodec_send_packet(codecContext_, &packet) == 0)
@@ -170,12 +174,13 @@ void RtspDecoder::start()
         av_packet_unref(&packet);
     }
     av_frame_free(&frame);
-    sws_freeContext(swsContext_);
     stop();
+    return;
 }
 
 void RtspDecoder::stop()
 {
+    data_queue_.clear();
     stopped_.store(true);
 }
 
