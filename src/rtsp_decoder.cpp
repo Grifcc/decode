@@ -61,8 +61,7 @@ RtspDecoder::RtspDecoder(const std::string &rtspUrl,
         srcWidth_, srcHeight_, AV_PIX_FMT_YUV420P,
         srcWidth_, srcHeight_, AV_PIX_FMT_GRAY8,
         0, nullptr, nullptr, nullptr);
-     MLOG_INFO("sws_getContext success");
-
+    MLOG_INFO("sws_getContext success");
 }
 
 bool RtspDecoder::init_stream()
@@ -153,7 +152,7 @@ void RtspDecoder::start()
     AVPacket packet;
     status_flag_.store(1);
     while (status_flag_.load() == 1)
-    {   
+    {
         if (!(av_read_frame(srcFmtContext_, &packet) >= 0))
         {
             continue;
@@ -214,12 +213,12 @@ void RtspDecoder::decode_target(const AVPacket &packet, std::vector<Label> &labe
     for (int i = 0; i < len / 18; ++i)
     {
         Label label;
-        label.label = transEnd(target_data + 1);
-        label.x = transEnd(target_data + 4);
-        label.y = transEnd(target_data + 7);
-        label.w = transEnd(target_data + 10);
-        label.h = transEnd(target_data + 13);
-        label.id = transEnd(target_data + 16);
+        label.id = transEnd(target_data + 1);
+        label.label = transEnd(target_data + 4);
+        label.x = transEnd(target_data + 7);
+        label.y = transEnd(target_data + 10);
+        label.w = transEnd(target_data + 13);
+        label.h = transEnd(target_data + 16);
         labels.push_back(label);
         target_data += 18;
     }
